@@ -24,7 +24,6 @@ function LoginForm() {
 
       if (error) {
         setErrorMessage(error.frontendErrorMessage);
-
         return;
       }
 
