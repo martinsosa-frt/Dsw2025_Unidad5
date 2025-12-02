@@ -8,7 +8,6 @@ export const register = async ({ username, email, password }) => {
     password,
   });
 
-  // en el backend la respuesta es texto plano tipo "Usuario ADMIN registrado"
-  // axios lo guarda en response.data
+  // axios guarda en response.data la respuesta del back "usuario registrado correctamente"
   return response.data;
 };

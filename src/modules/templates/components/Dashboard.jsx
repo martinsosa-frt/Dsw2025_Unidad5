@@ -27,7 +27,7 @@ function Dashboard() {
 
   const renderLogoutButton = (mobile = false) => (
     <Button className={`${mobile ? 'block w-full sm:hidden' :  'hidden sm:block' }`} onClick={logout}>Cerrar sesión</Button>
-  );
+  );      //para que si esta en un celular el logout sale dentro del menu lateral
 
   return (
     <div

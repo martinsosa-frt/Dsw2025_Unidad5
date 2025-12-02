@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import { register as registerService } from '../services/register';
+import { registerErrorMessages } from '../helpers/registerBackendError';
 
 function RegisterForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [policyErrors, setPolicyErrors] = useState([]); // errores de contraseña del back
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -24,9 +27,10 @@ function RegisterForm() {
 
   const navigate = useNavigate();
 
-  const onValid = async (formData) => {
+  const onValid = async (formData) => {     //limpia los mensajes anteriores antes de registrar 
     setErrorMessage('');
     setSuccessMessage('');
+    setPolicyErrors([]);
 
     if (formData.password !== formData.confirmPassword) {
       setErrorMessage('Las contraseñas no coinciden');
@@ -34,34 +38,39 @@ function RegisterForm() {
     }
 
     try {
+      setIsSubmitting(true);
+
       const message = await registerService({
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
 
-      // message normalmente será "Usuario ADMIN registrado" o similar
       setSuccessMessage(message || 'Usuario registrado correctamente');
 
-      // opcional: volver al login después de un ratito
+      //volver al login después de un seg y medio
       setTimeout(() => {
         navigate('/login');
       }, 1500);
     } catch (error) {
-      // acá capturamos errores del backend
-      if (error?.response?.data) {
-        // puede ser texto plano o un objeto con .detail
-        const data = error.response.data;
-        if (typeof data === 'string') {
-          setErrorMessage(data);
-        } else if (data.detail) {
-          setErrorMessage(data.detail);
-        } else {
-          setErrorMessage('Error al registrar usuario');
-        }
+      const data = error?.response?.data;
+
+      if (Array.isArray(data)) {      // porque el back manda un array con los errores de la contraseña
+        const messages = data.map((err) => {
+          return registerErrorMessages[err.code] || err.description || 'Error de contraseña desconocido';
+        });
+
+        setPolicyErrors(messages);
+
+      } else if (typeof data === 'string') {           //por si es un string simple
+        setErrorMessage(data);
+      } else if (data.detail) {
+        setErrorMessage(data.detail);
       } else {
-        setErrorMessage('Error de conexión. Intente nuevamente o contacte a soporte.');
+        setErrorMessage('Error al registrar usuario');
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -71,7 +80,7 @@ function RegisterForm() {
 
   return (
     <form
-      className="
+      className='
         flex
         flex-col
         gap-4
@@ -81,7 +90,7 @@ function RegisterForm() {
         shadow-sm
         w-full
         sm:w-[400px]
-      "
+      '
       onSubmit={handleSubmit(onValid)}
     >
       <h2 className='text-center text-xl mb-2'>Registrar Usuario</h2>
@@ -108,10 +117,6 @@ function RegisterForm() {
         type='password'
         {...register('password', {
           required: 'Contraseña es obligatoria',
-          minLength: {
-            value: 6,
-            message: 'La contraseña debe tener al menos 6 caracteres',
-          },
         })}
         error={errors.password?.message}
       />
@@ -125,15 +130,28 @@ function RegisterForm() {
         error={errors.confirmPassword?.message}
       />
 
+      {/* errores generales */}
+
       {errorMessage && (
         <p className='text-red-500 text-sm'>{errorMessage}</p>
       )}
+
+      {/* errores de la política de contraseña */}
+
+      {policyErrors.length > 0 && (
+        <ul className="text-red-500 text-sm list-disc list-inside">
+          {policyErrors.map((msg, index) => (
+            <li key={index}>{msg}</li>
+          ))}
+        </ul>
+      )}
+
       {successMessage && (
         <p className='text-green-600 text-sm'>{successMessage}</p>
       )}
 
-      <Button type='submit' className='mt-2'>
-        Registrar
+      <Button type='submit' className='mt-2' disabled={isSubmitting}>
+        {isSubmitting ? 'Registrando...' : 'Registrar'}
       </Button>
 
       <Button

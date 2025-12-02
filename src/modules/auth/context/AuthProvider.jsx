@@ -1,10 +1,10 @@
 import { createContext, useState } from 'react';
 import { login } from '../services/login';
 
-const AuthContext = createContext();
+const AuthContext = createContext();    //crea un contexto global de autenticacion
 
 function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {    //se inicializa leyendo el localstorage, si hay token es true si no es false
     const token = localStorage.getItem('token');
 
     return Boolean(token);
@@ -30,11 +30,11 @@ function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={ {
+      value={{
         isAuthenticated,
         singin,
         singout,
-      } }
+      }}
     >
       {children}
     </AuthContext.Provider>

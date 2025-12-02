@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthProvider';
 
 const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext);    //accede al contexto
 
   if (!context) {
     new Error('useAuth no debe ser usado por fuera de AuthProvider');

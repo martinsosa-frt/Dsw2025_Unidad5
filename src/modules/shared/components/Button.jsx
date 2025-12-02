@@ -1,7 +1,7 @@
 function Button({ children, type = 'button', variant = 'default', ...restProps }) {
   if (!['button', 'reset', 'submit'].includes(type)) {
     console.warn('type prop not supported');
-  }
+  }         //valida que sea submit reset o button
 
   const variantStyle = {
     default: 'bg-purple-200 hover:bg-purple-300 transition',
