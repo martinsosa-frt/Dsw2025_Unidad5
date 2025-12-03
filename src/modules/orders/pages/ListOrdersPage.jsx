@@ -143,8 +143,8 @@ function ListOrdersPage() {
                     
                     {/* COLUMNA IZQUIERDA: Información de texto */}
                     <div className="flex flex-col gap-1">
-                      <h1><b>Usuario: </b> {order.customerName}</h1>
                       <h2><b>Id de orden:</b> {order.id}</h2>
+                      <h1><b>Cliente: </b> {order.customerName}</h1>
                       <h2><b>Estado:</b> {order.orderStatus}</h2>
                       <h2><b>Total:</b> ${order.totalAmount}</h2>
                     </div>
