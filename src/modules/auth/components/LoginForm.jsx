@@ -8,6 +8,7 @@ import { frontendErrorMessage } from '../helpers/backendError';
 
 function LoginForm() {
   const [errorMessage, setErrorMessage] = useState('');
+
   const {
     register,
     handleSubmit,
@@ -17,6 +18,10 @@ function LoginForm() {
   const navigate = useNavigate();
 
   const { singin } = useAuth();
+
+  const goToRegister = () => {
+    navigate('/register');
+  }
 
   const onValid = async (formData) => {
     try {
@@ -49,26 +54,26 @@ function LoginForm() {
         sm:rounded-lg
         sm:shadow-lg
       '
-    onSubmit={handleSubmit(onValid)}
+      onSubmit={handleSubmit(onValid)}
     >
       <Input
         label='Usuario'
-        { ...register('username', {
+        {...register('username', {
           required: 'Usuario es obligatorio',
-        }) }
+        })}
         error={errors.username?.message}
       />
       <Input
         label='Contraseña'
-        { ...register('password', {
+        {...register('password', {
           required: 'Contraseña es obligatorio',
-        }) }
+        })}
         type='password'
         error={errors.password?.message}
       />
 
       <Button type='submit'>Iniciar Sesión</Button>
-      <Button variant='secondary' onClick={() => alert('Debe impletar navegacion y pagina de registro')}>Registrar Usuario</Button>
+      <Button variant='secondary' type='button' onClick={goToRegister}>Registrar Usuario</Button>
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );
