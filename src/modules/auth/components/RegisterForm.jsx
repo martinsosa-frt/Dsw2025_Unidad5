@@ -16,7 +16,9 @@ function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors },
+    getValues
   } = useForm({
+    criteriaMode: 'all',    //para que evalue todas las reglas en vez de parar en la primera
     defaultValues: {
       username: '',
       email: '',
@@ -32,10 +34,10 @@ function RegisterForm() {
     setSuccessMessage('');
     setPolicyErrors([]);
 
-    if (formData.password !== formData.confirmPassword) {
-      setErrorMessage('Las contraseñas no coinciden');
-      return;
-    }
+    // if (formData.password !== formData.confirmPassword) {
+    //   setErrorMessage('Las contraseñas no coinciden');
+    //   return;
+    // }
 
     try {
       setIsSubmitting(true);
@@ -64,7 +66,7 @@ function RegisterForm() {
 
       } else if (typeof data === 'string') {           //por si es un string simple
         setErrorMessage(data);
-      } else if (data.detail) {
+      } else if (data?.detail) {
         setErrorMessage(data.detail);
       } else {
         setErrorMessage('Error al registrar usuario');
@@ -95,6 +97,7 @@ function RegisterForm() {
     >
       <h2 className='text-center text-xl mb-2'>Registrar Usuario</h2>
 
+      {/* USUARIO */}
       <Input
         label='Usuario'
         {...register('username', {
@@ -103,29 +106,58 @@ function RegisterForm() {
         error={errors.username?.message}
       />
 
+      {/* EMAIL */}
       <Input
         label='Email'
         type='email'
         {...register('email', {
           required: 'Email es obligatorio',
+          pattern: {
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: 'Formato de email inválido',
+          },  
         })}
         error={errors.email?.message}
       />
 
+      {/* CONTRASEÑA */}
       <Input
         label='Contraseña'
         type='password'
         {...register('password', {
           required: 'Contraseña es obligatoria',
+          minLength: {
+            value: 8,
+            message: 'La contraseña debe tener al menos 8 caracteres',
+          },
+          validate: {
+            hasUpper: (value) =>
+              /[A-Z]/.test(value) || 'La contraseña debe tener al menos una letra mayúscula',
+            hasDigit: (value) =>
+              /\d/.test(value) || 'La contraseña debe tener al menos un número',
+            hasSpecial: (value) =>
+              /[^a-z0-9A-Z]/.test(value) || 'La contraseña debe tener al menos un carácter especial',
+          },
         })}
-        error={errors.password?.message}
+        error=''
       />
+      {/* mostrar errores de contraseña del FRONT (react-hook-form) */}
+      {errors.password?.types && (
+        <ul className="text-red-500 text-sm list-disc list-inside">
+          {Object.values(errors.password.types).map((msg, index) => (
+            <li key={index}>{msg}</li>
+          ))}
+        </ul>
+      )}
 
+      {/* CONFIRMAR CONTRASEÑA */}
       <Input
         label='Confirmar contraseña'
         type='password'
         {...register('confirmPassword', {
           required: 'Debes confirmar la contraseña',
+          validate: (value) =>
+            value === getValues('password') || 'Las contraseñas no coinciden',
         })}
         error={errors.confirmPassword?.message}
       />

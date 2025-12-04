@@ -9,10 +9,10 @@ import { frontendErrorMessage } from '../helpers/backendError';
 
 function CreateProductForm() {
   const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
+    register,     //conecta los inputs con el form
+    formState: { errors },      //guarda los errores de validacion del lado del cliente
+    handleSubmit,     //envuelve la funcion onvalid y solo la llama si las validaciones pasan
+  } = useForm({       
     defaultValues: {
       sku: '',
       cui: '',
@@ -21,10 +21,10 @@ function CreateProductForm() {
       price: 0,
       stock: 0,
     },
-  });
+  });     //inicializa el formulario con valores por defecto
 
   const [errorBackendMessage, setErrorBackendMessage] = useState('');
-  const navigate = useNavigate();
+  const navigate = useNavigate();   //para volver al admin/products depsues del alta
 
   const onValid = async (formData) => {
     try {
