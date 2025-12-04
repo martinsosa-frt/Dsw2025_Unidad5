@@ -31,7 +31,7 @@ function LoginForm() {
         setErrorMessage(error.frontendErrorMessage);
         return;
       }
-
+      
       navigate('/admin/home');
     } catch (error) {
       if (error?.response?.data?.code) {
