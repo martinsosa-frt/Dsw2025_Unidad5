@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form'; // 1. Importamos useForm
+
 // Hooks
 import useAuth from '../../../auth/hook/useAuth';
 import { useCart } from '../hooks/useCart';
@@ -12,18 +15,29 @@ import UserHeaderMenu from '../../../shared/components/UserHeaderMenu';
 import MobileSideMenu from '../../../shared/components/MobileSideMenu';
 import LoginModal from '../../../auth/components/LoginModal';
 import RegisterModal from '../../../auth/components/RegisterModal';
+import Input from '../../../shared/components/Input'; // 2. Asegúrate de importar tu Input
 
 // Services
-import { createOrder } from '../../../orders/services/createOrder';import { useEffect } from 'react';
-
+import { createOrder } from '../../../orders/services/createOrder';
 
 function CartPage() {
   const navigate = useNavigate();
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
   const { user } = useAuth();
- 
 
   const { deleteQuantities, get, increment, decrement, reset } = useDeleteQuantity();
+
+  // Inicializamos el formulario para las direcciones
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      shippingAddress: '',
+      billingAddress: '',
+    },
+  });
 
   const {
     state: modals,
@@ -42,8 +56,6 @@ function CartPage() {
     const openLogin = () => open('loginModal');
     const openRegister = () => open('registerModal');
 
-    
-
     window.addEventListener('open-login', openLogin);
     window.addEventListener('open-register', openRegister);
 
@@ -53,18 +65,17 @@ function CartPage() {
     };
   }, []);
 
-  const sendOrder = async () => {
+  // 4. Modificamos sendOrder para recibir los datos del formulario (formData)
+  const sendOrder = async (formData) => {
     if (!user) {
       open('loginModal');
-
       return;
     }
-
     try {
       const orderData = {
-        customerId: user.customerId,
-        shippingAddress: 'Sin especificar',
-        billingAddress: 'Sin especificar',
+        userId: user.userId,
+        shippingAddress: formData.shippingAddress, 
+        billingAddress: formData.billingAddress,
         notes: '',
         orderItems: cart.map((item) => ({
           productId: item.productId,
@@ -75,7 +86,7 @@ function CartPage() {
       const { data, error } = await createOrder(orderData);
 
       if (error) throw error;
-
+      alert('✅ ¡La orden se creó correctamente!');
       clearCart();
       navigate('/');
     } catch (err) {
@@ -84,11 +95,12 @@ function CartPage() {
     }
   };
 
-  const handleCheckout = () => sendOrder();
+  // No necesitamos handleCheckout aparte, usaremos handleSubmit de react-hook-form
 
   const handleLoginSuccess = () => {
     close('loginModal');
-    sendOrder();
+    // Nota: Aquí no podemos llamar a handleSubmit(sendOrder) fácilmente sin los datos del form.
+    // Lo ideal es que el usuario vuelva a dar click en "Finalizar Compra" tras loguearse.
   };
 
   if (cart.length === 0) {
@@ -102,6 +114,7 @@ function CartPage() {
           <img
             src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
             className="w-32 mx-auto opacity-80 mb-6"
+            alt="Carrito vacío"
           />
           <Button className="w-full text-lg py-2" onClick={() => navigate('/')}>
             Ver productos
@@ -150,11 +163,11 @@ function CartPage() {
 
       {/* Cart Items + Order Summary */}
       <div className="mt-4 flex flex-col sm:flex-row gap-4">
-        {/* Cart items */}
+        
+        {/* IZQUIERDA: Lista de productos */}
         <div className="flex-1 flex flex-col gap-4">
           {cart.map((item) => {
             const delQty = get(item.sku) || 1;
-           
             const remaining = item.quantity - delQty;
 
             return (
@@ -196,7 +209,6 @@ function CartPage() {
                     onClick={() => {
                       if (delQty >= item.quantity) removeFromCart(item.sku);
                       else updateQuantity(item.sku, item.quantity - delQty);
-
                       reset(item.sku);
                     }}
                   >
@@ -204,25 +216,50 @@ function CartPage() {
                   </Button>
                 </div>
                 <div className="mt-3 text-right font-semibold text-lg">
-                  Subtotal: ${(item.quantity* item.currentUnitPrice).toFixed(2)}
+                  Subtotal: ${(item.quantity * item.currentUnitPrice).toFixed(2)}
                 </div>
               </Card>
             );
           })}
         </div>
 
-        {/* Order summary */}
-        <Card className="sm:w-72 h-fit p-4">
-          <h2 className="text-lg font-semibold">Detalle del pedido</h2>
-          <p className="text-lg">Total ítems: {totalItems}</p>
-          <p className="text-lg">Total a pagar: ${totalAmount.toFixed(2)}</p>
+        {/* DERECHA: Resumen del Pedido + FORMULARIO */}
+        <Card className="sm:w-80 h-fit p-4">
+          <h2 className="text-lg font-semibold mb-4">Detalle del pedido</h2>
+          <p className="text-lg mb-2">Total ítems: {totalItems}</p>
+          <p className="text-lg font-bold mb-6">Total a pagar: ${totalAmount.toFixed(2)}</p>
 
-          <Button
-            className="w-full py-1 text-sm sm:text-base sm:py-2"
-            onClick={handleCheckout}
-          >
-            Finalizar compra
-          </Button>
+          {/* 5. AQUI EMPIEZA EL FORMULARIO INTEGRADO */}
+          <form onSubmit={handleSubmit(sendOrder)} className="flex flex-col gap-4">
+            
+            <Input
+              label="Dirección de envío"
+              placeholder="Calle Falsa 123"
+              {...register('shippingAddress', {
+                required: 'Requerido para el envío',
+                minLength: { value: 5, message: 'Dirección muy corta' }
+              })}
+              error={errors.shippingAddress?.message}
+            />
+
+            <Input
+              label="Dirección de facturación"
+              placeholder="Misma que envío"
+              {...register('billingAddress', {
+                required: 'Requerido para facturar',
+                minLength: { value: 5, message: 'Dirección muy corta' }
+              })}
+              error={errors.billingAddress?.message}
+            />
+
+            <Button
+              type="submit" // 6. El botón ahora envía el formulario
+              className="w-full py-2 text-sm sm:text-base mt-2"
+            >
+              Finalizar compra
+            </Button>
+          </form>
+
         </Card>
       </div>
 

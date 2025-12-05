@@ -9,7 +9,7 @@ function Button({ children, type = 'button', variant = 'default', ...restProps }
   };
 
   return (
-    <button
+    <button 
       {...restProps}
       className={`${variantStyle[variant]} ${restProps.className}`}
       type={type}
