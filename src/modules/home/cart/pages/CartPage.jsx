@@ -203,9 +203,6 @@ function CartPage() {
                     Borrar
                   </Button>
                 </div>
-                    
-                   { console.log("catidad: "+ remaining)}
-                  { console.log("precio unitario: "+item.currentUnitPrice)}
                 <div className="mt-3 text-right font-semibold text-lg">
                   Subtotal: ${(item.quantity* item.currentUnitPrice).toFixed(2)}
                 </div>

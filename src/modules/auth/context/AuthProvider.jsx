@@ -1,20 +1,18 @@
 import { createContext, useState } from 'react';
 import { login } from '../services/login';
 
-const AuthContext = createContext();    //crea un contexto global de autenticacion
+const AuthContext = createContext();
 
-// 👇 helper para extraer el rol desde el JWT
+// 👇 Helper para extraer el rol desde el JWT (Aporte de tu compañero)
 function getRoleFromToken(token) {
   try {
-    // Los JWT vienen como header.payload.signature
+    if (!token) return null;
     const [, payloadBase64] = token.split('.');
     if (!payloadBase64) return null;
 
-    // Base64URL -> Base64 normal
     const base64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
     const json = atob(base64);
     const payload = JSON.parse(json);
-
 
     return payload.role || null;
   } catch (error) {
@@ -24,35 +22,50 @@ function getRoleFromToken(token) {
 }
 
 function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {    //se inicializa leyendo el localstorage, si hay token es true si no es false
+  // 1. Estado del USUARIO (Tu lógica: ID y Username)
+  const [user, setUser] = useState(() => {
     const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    const userId = localStorage.getItem('userId');
 
-    return Boolean(token);
+    // Si hay token, reconstruimos el usuario
+    return token ? { username, userId } : null; 
   });
 
+  // 2. Estado del ROL (Lógica de tu compañero)
   const [role, setRole] = useState(() => {
     const token = localStorage.getItem('token');
-    if (!token) return null;
     return getRoleFromToken(token);
   });
 
+  // 3. Estado derivado: Si hay usuario, está autenticado
+  const isAuthenticated = !!user;
+
   const singout = () => {
     localStorage.clear();
-    setIsAuthenticated(false);
-    setRole(null);
+    setUser(null); // Limpiamos usuario
+    setRole(null); // Limpiamos rol
   };
 
   const singin = async (username, password) => {
+    // data viene del backend como: { token: "...", username: "...", userId: "..." }
     const { data, error } = await login(username, password);
 
     if (error) {
       return { error };
     }
 
-    localStorage.setItem('token', data);
-    const decodedRole = getRoleFromToken(data);
+    // Guardamos en LocalStorage
+    localStorage.setItem('token', data.token); // OJO: Usamos data.token
+    localStorage.setItem('username', data.username);
+    localStorage.setItem('userId', data.userId);
+
+    // Decodificamos el rol usando el TOKEN que vino dentro del objeto data
+    const decodedRole = getRoleFromToken(data.token);
+
+    // Actualizamos estados
+    setUser({ username: data.username, userId: data.userId });
     setRole(decodedRole);
-    setIsAuthenticated(true);
 
     return { error: null, role: decodedRole };
   };
@@ -61,9 +74,10 @@ function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         isAuthenticated,
+        user, 
+        role,
         singin,
         singout,
-        role,
       }}
     >
       {children}
@@ -71,7 +85,4 @@ function AuthProvider({ children }) {
   );
 };
 
-export {
-  AuthProvider,
-  AuthContext,
-};
+export { AuthProvider, AuthContext };

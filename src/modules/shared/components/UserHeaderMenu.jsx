@@ -13,8 +13,8 @@ export default function UserHeaderMenu({
   onOpenMobileMenu,
 }) {
   const { isAuthenticated, user, singout } = useAuth();
-  const displayName = user?.name || 'Usuario';
-
+  const displayName = user?.username || 'Usuario';
+  
   return (
     <div className="mb-3">
       <div className="flex justify-between items-center">
@@ -65,7 +65,7 @@ export default function UserHeaderMenu({
             <>
               <Button onClick={singout}>Cerrar sesión</Button>
 
-              {/* Nombre + Avatar */}
+              
               <div className="flex items-center gap-2 text-sm font-medium">
                 <img
                   src="https://cdn-icons-png.freepik.com/512/12225/12225935.png"
