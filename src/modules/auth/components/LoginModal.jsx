@@ -8,7 +8,7 @@ export default function LoginModal({ isOpen, onClose }) {
       <h2 className="text-2xl font-bold mb-4 text-center">Iniciar sesión</h2>
 
       <LoginForm
-        onSuccess={onClose}  // ← al logear cierra modal  NOTA: LoginForm no recibe ni usa esta prop?
+        onSuccess={onClose}  // ← al logear cierra modal 
       />
 
       <p className="text-center text-sm mt-4">

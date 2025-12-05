@@ -6,7 +6,7 @@ import Button from '../../shared/components/Button';
 import { register as registerService } from '../services/register';
 import { registerErrorMessages } from '../helpers/registerBackendError';
 
-function RegisterForm() {
+function RegisterForm({ onSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [policyErrors, setPolicyErrors] = useState([]); // errores de contraseña del back
@@ -50,10 +50,17 @@ function RegisterForm() {
 
       setSuccessMessage(message || 'Usuario registrado correctamente');
 
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
+      }
       //volver al login después de un seg y medio
-      setTimeout(() => {
-        navigate('/login');
-      }, 1500);
+      // setTimeout(() => {
+      //   navigate('/login');
+      // }, 1500);
     } catch (error) {
       const data = error?.response?.data;
 
