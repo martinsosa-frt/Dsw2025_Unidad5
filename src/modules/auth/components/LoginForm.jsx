@@ -6,7 +6,7 @@ import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 import { frontendErrorMessage } from '../helpers/backendError';
 
-function LoginForm({onSuccess}) {
+function LoginForm({onSuccess, onGoRegister}) {
   const [errorMessage, setErrorMessage] = useState('');
 
   const {
@@ -20,7 +20,13 @@ function LoginForm({onSuccess}) {
   const { singin } = useAuth();
 
   const goToRegister = () => {
-    navigate('/register');
+    // Si el padre me pasó un handler, lo uso (caso modal en "/")
+    if (onGoRegister) {
+      onGoRegister();
+    } else {
+      // Si no, me comporto como siempre (página /login → /register)
+      navigate('/register');
+    }
   }
 
   const onValid = async (formData) => {
