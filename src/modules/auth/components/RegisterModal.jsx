@@ -8,7 +8,7 @@ export default function RegisterModal({ isOpen, onClose }) {
       <h2 className="text-2xl font-bold mb-4 text-center">Crear cuenta</h2>
 
       <RegisterForm
-        fixedRole="Client"  // ← siempre cliente
+        fixedRole="Client"  // ← siempre cliente    NOTA: RegisterForm no recibe ni usa estas props
         onSuccess={onClose}
       />
 

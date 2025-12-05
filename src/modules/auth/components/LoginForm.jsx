@@ -6,7 +6,7 @@ import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 import { frontendErrorMessage } from '../helpers/backendError';
 
-function LoginForm() {
+function LoginForm({onSuccess}) {
   const [errorMessage, setErrorMessage] = useState('');
 
   const {
@@ -31,8 +31,12 @@ function LoginForm() {
         setErrorMessage(error.frontendErrorMessage);
         return;
       }
-      
-      navigate('/admin/home');
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate('/admin/home');
+      }
+      //navigate('/admin/home');
     } catch (error) {
       if (error?.response?.data?.code) {
         setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
