@@ -97,9 +97,9 @@ function RegisterForm({ onSuccess }) {
         p-4
         rounded-xl
         shadow-sm
-        w-full
+        w-full max-w-md
+        mx-auto
         sm:p-8
-        sm:w-[400px]
       '
       onSubmit={handleSubmit(onValid)}
     >
