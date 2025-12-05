@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form'; // 1. Importamos useForm
+import { toast, Toaster } from 'react-hot-toast';
 
 // Hooks
 import useAuth from '../../../auth/hook/useAuth';
@@ -86,12 +87,27 @@ function CartPage() {
       const { data, error } = await createOrder(orderData);
 
       if (error) throw error;
-      alert('✅ ¡La orden se creó correctamente!');
-      clearCart();
-      navigate('/');
-    } catch (err) {
+         clearCart();
+        toast.success("Orden creada con éxito", {
+        icon: "✅🚀",
+        duration: 3000,
+        style: {
+          padding: '16px',
+          color: '#fff',          
+          background: '#22c55e',    
+          fontSize: "20px",
+          minWidth: "300px",
+        }
+      });
+      
+
+      setTimeout(() => {
+        navigate('/'); 
+      }, 3000);
+      
+    } catch (err) {  
       console.error(err);
-      alert('Error al procesar la orden.');
+      toast.error('Error al procesar la orden.');
     }
   };
 
@@ -127,6 +143,7 @@ function CartPage() {
   return (
     <div>
       {/* Header */}
+    
       <Card>
         <UserHeaderMenu
           title="Carrito"

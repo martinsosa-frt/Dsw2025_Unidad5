@@ -1,4 +1,5 @@
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast'; 
 import { AuthProvider } from './modules/auth/context/AuthProvider';
 import LoginPage from './modules/auth/pages/LoginPage';
 import Dashboard from './modules/templates/components/Dashboard';
@@ -65,6 +66,7 @@ function App() {
 
   return (
     <AuthProvider>
+      <Toaster position="top-center" reverseOrder={false}/>
       <RouterProvider router={router} />
     </AuthProvider>
   );
