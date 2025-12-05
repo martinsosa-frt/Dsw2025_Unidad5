@@ -94,10 +94,11 @@ function RegisterForm({ onSuccess }) {
         flex-col
         gap-4
         bg-white
-        p-8
+        p-4
         rounded-xl
         shadow-sm
         w-full
+        sm:p-8
         sm:w-[400px]
       '
       onSubmit={handleSubmit(onValid)}
@@ -189,14 +190,14 @@ function RegisterForm({ onSuccess }) {
         <p className='text-green-600 text-sm'>{successMessage}</p>
       )}
 
-      <Button type='submit' className='mt-2' disabled={isSubmitting}>
+      <Button type='submit' className='mt-4 w-full py-2 text-sm sm:py-3 sm:text-base' disabled={isSubmitting}>
         {isSubmitting ? 'Registrando...' : 'Registrar'}
       </Button>
 
       <Button
         type='button'
         variant='secondary'
-        className='mt-2'
+        className='mt-2 w-full py-2 text-sm sm:py-3 sm:text-base'
         onClick={goBackToLogin}
       >
         Volver a Iniciar Sesión
