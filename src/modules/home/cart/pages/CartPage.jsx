@@ -100,10 +100,7 @@ function CartPage() {
         }
       });
       
-
-      setTimeout(() => {
-        navigate('/'); 
-      }, 3000);
+      navigate('/'); 
       
     } catch (err) {  
       console.error(err);

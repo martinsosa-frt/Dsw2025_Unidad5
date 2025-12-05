@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast'; 
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
@@ -19,12 +20,17 @@ function LoginForm({onSuccess, onGoRegister}) {
 
   const { singin } = useAuth();
 
+  // Estilos SOLO de tamaño (sin colores)
+  const toastStyle = {
+    padding: '16px',        // Mantiene el "aire"
+    fontSize: "20px",       // Mantiene la letra grande
+    minWidth: "300px",      // Mantiene el ancho
+  };
+
   const goToRegister = () => {
-    // Si el padre me pasó un handler, lo uso (caso modal en "/")
     if (onGoRegister) {
       onGoRegister();
     } else {
-      // Si no, me comporto como siempre (página /login → /register)
       navigate('/register');
     }
   }
@@ -34,33 +40,46 @@ function LoginForm({onSuccess, onGoRegister}) {
       const { error, role } = await singin(formData.username, formData.password);
 
       if (error) {
-        setErrorMessage(error.frontendErrorMessage || 'Error al iniciar sesion');
+        const msg = error.frontendErrorMessage || 'Error al iniciar sesion';
+        setErrorMessage(msg);
+        
+        // Toast de Error (sin color de fondo forzado)
+        toast.error(msg, {
+          style: toastStyle, // Solo aplica tamaño
+        });
         return;
       }
-      // Si el padre pasó onSuccess (por ej., el modal en "/"), lo llamamos
-      // para que cierre el modal o haga lo que necesite.
+
+      // Toast de Bienvenida (sin color de fondo forzado)
+      toast.success(`¡Bienvenido, ${formData.username}!`, {
+        icon: "👋😎", 
+        duration: 3000,
+        style: toastStyle, 
+      });
+
       if (onSuccess) {
         onSuccess();
       } 
       
-      // Navegación según el rol
       if (role === 'Admin'){
         navigate('/admin/home');
-      }else {
-        // User (u otro rol)
-        // - Si estamos en /login (no hay onSuccess) -> mandar a '/'
-        // - Si estamos en "/" usando modal (sí hay onSuccess) -> ya estamos en '/', no hace falta navegar
+      } else {
         if (!onSuccess) {
-        navigate('/');
+          navigate('/');
         }
       }
 
     } catch (error) {
+      console.error(error.response.data);
+      let msg = error.response.data || 'Error al iniciar sesión';
       if (error?.response?.data?.code) {
-        setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
-      } else {
-        setErrorMessage('Llame a soporte');
+        msg = frontendErrorMessage[error?.response?.data?.code];
       }
+      //setErrorMessage(msg);
+      
+      toast.error(msg, {
+        style: toastStyle,
+      });
     }
   };
 

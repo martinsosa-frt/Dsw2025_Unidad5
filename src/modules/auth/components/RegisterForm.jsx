@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast'; // <--- 1. Importante: Importar toast
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import { register as registerService } from '../services/register';
 import { registerErrorMessages } from '../helpers/registerBackendError';
 
-function RegisterForm({ onSuccess, onGoBackToLogin }) {
+function RegisterForm({ onSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [policyErrors, setPolicyErrors] = useState([]); // errores de contraseña del back
+  const [policyErrors, setPolicyErrors] = useState([]); 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -18,7 +19,7 @@ function RegisterForm({ onSuccess, onGoBackToLogin }) {
     formState: { errors },
     getValues
   } = useForm({
-    criteriaMode: 'all',    //para que evalue todas las reglas en vez de parar en la primera
+    criteriaMode: 'all',    
     defaultValues: {
       username: '',
       email: '',
@@ -29,15 +30,17 @@ function RegisterForm({ onSuccess, onGoBackToLogin }) {
 
   const navigate = useNavigate();
 
-  const onValid = async (formData) => {     //limpia los mensajes anteriores antes de registrar 
+  // Estilos compartidos para los Toasts (para no repetir código)
+  const toastStyle = {
+    padding: '16px',         
+    fontSize: "20px",
+    minWidth: "300px",
+  };
+
+  const onValid = async (formData) => {     
     setErrorMessage('');
     setSuccessMessage('');
     setPolicyErrors([]);
-
-    // if (formData.password !== formData.confirmPassword) {
-    //   setErrorMessage('Las contraseñas no coinciden');
-    //   return;
-    // }
 
     try {
       setIsSubmitting(true);
@@ -48,6 +51,15 @@ function RegisterForm({ onSuccess, onGoBackToLogin }) {
         password: formData.password,
       });
 
+      toast.success("Usuario registrado correctamente", {
+        icon: "✅👤",
+        duration: 3000,
+        style: {
+        toastStyle      
+        }
+      });
+      // --------------------------------------------------
+
       setSuccessMessage(message || 'Usuario registrado correctamente');
 
       if (onSuccess) {
@@ -55,42 +67,48 @@ function RegisterForm({ onSuccess, onGoBackToLogin }) {
       } else {
         setTimeout(() => {
           navigate('/login');
-        }, 1500);
+        }, 1500); // Espera un poquito para que se vea el mensaje
       }
-      //volver al login después de un seg y medio
-      // setTimeout(() => {
-      //   navigate('/login');
-      // }, 1500);
+     
     } catch (error) {
       const data = error?.response?.data;
 
-      if (Array.isArray(data)) {      // porque el back manda un array con los errores de la contraseña
+      const showErrorToast = (msg) => {
+        toast.error(msg, {
+          style: {
+          toastStyle
+          }
+        });
+      };
+
+      if (Array.isArray(data)) {      
         const messages = data.map((err) => {
           return registerErrorMessages[err.code] || err.description || 'Error de contraseña desconocido';
         });
-
         setPolicyErrors(messages);
+        showErrorToast("Verifique los requisitos de la contraseña");
 
-      } else if (typeof data === 'string') {           //por si es un string simple
+      } else if (typeof data === 'string') {           
         setErrorMessage(data);
+        showErrorToast(data);
+
       } else if (data?.detail) {
         setErrorMessage(data.detail);
+        showErrorToast(data.detail);
+
       } else {
         setErrorMessage('Error al registrar usuario');
+        showErrorToast('Error al registrar usuario');
       }
+      // ------------------------------------------------
+
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const goBackToLogin = () => {
-    // Si me pasan un handler, lo uso (modal en "/")
-    if (onGoBackToLogin) {
-      onGoBackToLogin();
-    } else {
-      // Comportamiento original (página /register → /login)
-      navigate('/login');
-    }
+    navigate('/login');
   };
 
   return (
@@ -103,9 +121,9 @@ function RegisterForm({ onSuccess, onGoBackToLogin }) {
         p-4
         rounded-xl
         shadow-sm
-        w-full max-w-md
-        mx-auto
+        w-full
         sm:p-8
+        sm:w-[400px]
       '
       onSubmit={handleSubmit(onValid)}
     >
@@ -155,7 +173,8 @@ function RegisterForm({ onSuccess, onGoBackToLogin }) {
         })}
         error=''
       />
-      {/* mostrar errores de contraseña del FRONT (react-hook-form) */}
+      
+      {/* Lista de errores de contraseña (Front) */}
       {errors.password?.types && (
         <ul className="text-red-500 text-sm list-disc list-inside">
           {Object.values(errors.password.types).map((msg, index) => (
@@ -176,14 +195,12 @@ function RegisterForm({ onSuccess, onGoBackToLogin }) {
         error={errors.confirmPassword?.message}
       />
 
-      {/* errores generales */}
-
+      {/* Errores generales (Back) */}
       {errorMessage && (
         <p className='text-red-500 text-sm'>{errorMessage}</p>
       )}
 
-      {/* errores de la política de contraseña */}
-
+      {/* Errores de políticas de contraseña (Back) */}
       {policyErrors.length > 0 && (
         <ul className="text-red-500 text-sm list-disc list-inside">
           {policyErrors.map((msg, index) => (
@@ -192,6 +209,7 @@ function RegisterForm({ onSuccess, onGoBackToLogin }) {
         </ul>
       )}
 
+      {/* Mensaje de éxito en texto (además del toast) */}
       {successMessage && (
         <p className='text-green-600 text-sm'>{successMessage}</p>
       )}
