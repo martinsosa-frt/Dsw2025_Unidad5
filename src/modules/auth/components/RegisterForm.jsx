@@ -6,7 +6,7 @@ import Button from '../../shared/components/Button';
 import { register as registerService } from '../services/register';
 import { registerErrorMessages } from '../helpers/registerBackendError';
 
-function RegisterForm({ onSuccess }) {
+function RegisterForm({ onSuccess, onGoBackToLogin }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [policyErrors, setPolicyErrors] = useState([]); // errores de contraseña del back
@@ -84,7 +84,13 @@ function RegisterForm({ onSuccess }) {
   };
 
   const goBackToLogin = () => {
-    navigate('/login');
+    // Si me pasan un handler, lo uso (modal en "/")
+    if (onGoBackToLogin) {
+      onGoBackToLogin();
+    } else {
+      // Comportamiento original (página /register → /login)
+      navigate('/login');
+    }
   };
 
   return (
@@ -97,9 +103,9 @@ function RegisterForm({ onSuccess }) {
         p-4
         rounded-xl
         shadow-sm
-        w-full
+        w-full max-w-md
+        mx-auto
         sm:p-8
-        sm:w-[400px]
       '
       onSubmit={handleSubmit(onValid)}
     >
