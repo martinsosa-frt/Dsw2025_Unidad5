@@ -3,7 +3,7 @@ import { login } from '../services/login';
 
 const AuthContext = createContext();
 
-// 👇 Helper para extraer el rol desde el JWT (Aporte de tu compañero)
+// Helper para extraer el rol desde el JWT (Aporte de tu compañero)
 function getRoleFromToken(token) {
   try {
     if (!token) return null;
