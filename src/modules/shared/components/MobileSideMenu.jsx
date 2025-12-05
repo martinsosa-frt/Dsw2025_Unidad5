@@ -1,5 +1,9 @@
 import Button from './Button';
 import useAuth from '../../auth/hook/useAuth';
+import { IoIosCart } from "react-icons/io";
+import { MdLogout } from "react-icons/md";
+import { IoMdArrowRoundBack } from "react-icons/io";
+
 
 export default function MobileSideMenu({
   isOpen,
@@ -44,8 +48,8 @@ export default function MobileSideMenu({
       )}
 
       {onGoCart && (
-        <Button className="text-xl mt-4 w-full" onClick={onGoCart}>
-          Ver carrito ({totalItems})
+        <Button className="text-xl mt-4 w-full flex items-center justify-center gap-2" onClick={onGoCart}>
+         <IoIosCart />Ver carrito ({totalItems})
         </Button>
       )}
 
@@ -59,13 +63,13 @@ export default function MobileSideMenu({
           </Button>
         </>
       ) : (
-        <Button className="text-xl mt-4 w-full" onClick={() => { singout(); onClose(); }}>
-          Cerrar sesión
+        <Button className="text-xl mt-4 w-full flex items-center justify-center gap-2" onClick={() => { singout(); onClose(); }}>
+        <MdLogout /> Cerrar sesión
         </Button>
       )}
 
-      <Button className="text-xl mt-4 w-full" onClick={onClose}>
-        Cerrar ✘
+      <Button className="text-xl mt-4 w-full flex items-center justify-center " onClick={onClose}>
+       <IoMdArrowRoundBack /> Volver
       </Button>
     </div>
   );

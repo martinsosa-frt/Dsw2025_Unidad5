@@ -6,6 +6,8 @@ import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 import { frontendErrorMessage } from '../helpers/backendError';
+import { RiLockPasswordFill } from "react-icons/ri";
+import { FaUser } from "react-icons/fa";
 
 function LoginForm({onSuccess, onGoRegister}) {
   const [errorMessage, setErrorMessage] = useState('');
@@ -101,6 +103,7 @@ function LoginForm({onSuccess, onGoRegister}) {
     >
       <Input
         label='Usuario'
+        icon={<FaUser />}
         {...register('username', {
           required: 'Usuario es obligatorio',
         })}
@@ -108,6 +111,7 @@ function LoginForm({onSuccess, onGoRegister}) {
       />
       <Input
         label='Contraseña'
+        icon={<RiLockPasswordFill />}
         {...register('password', {
           required: 'Contraseña es obligatorio',
         })}

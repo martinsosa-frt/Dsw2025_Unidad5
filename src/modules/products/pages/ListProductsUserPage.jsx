@@ -8,6 +8,7 @@ import RegisterModal from '../../auth/components/RegisterModal';
 import UserHeaderMenu from '../../shared/components/UserHeaderMenu';
 import MobileSideMenu from '../../shared/components/MobileSideMenu';
 import { getProducts } from '../services/listUser';
+import { FaCartArrowDown } from "react-icons/fa6";
 
 export default function ListProductsUserPage() {
     const defaultProductImage =
@@ -190,9 +191,9 @@ export default function ListProductsUserPage() {
                       }));
                     }}
                     disabled={isMaxReached}
-                    className="ml-auto sm:ml-5 text-sm px-4 py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center gap-2 ml-auto sm:ml-5 text-sm px-4 py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    Agregar
+                   <FaCartArrowDown /> Agregar
                   </Button>
                 </div>
               </Card>

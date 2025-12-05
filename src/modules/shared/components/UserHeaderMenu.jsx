@@ -1,6 +1,11 @@
 import Button from './Button';
 import SearchBar from './SearchBar';
 import useAuth from '../../auth/hook/useAuth';
+import { IoIosCart } from "react-icons/io";
+import { MdLogout } from "react-icons/md";
+import { TiThMenu } from "react-icons/ti";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function UserHeaderMenu({
   title = '',
@@ -47,12 +52,12 @@ export default function UserHeaderMenu({
         {/* BOTONES DESKTOP */}
         <div className="hidden sm:flex items-center gap-3">
           {onGoProducts && (
-            <Button onClick={onGoProducts}>Volver</Button>
+            <Button onClick={onGoProducts} className={"flex items-center justify-center gap-3"} ><IoMdArrowRoundBack />Volver</Button>
           )}
 
           {onGoCart && (
-            <Button onClick={onGoCart}>
-              Carrito ({totalItems})
+            <Button onClick={onGoCart} className="flex items-center justify-center gap-2">
+             <IoIosCart/> Carrito ({totalItems})
             </Button>
           )}
 
@@ -63,7 +68,9 @@ export default function UserHeaderMenu({
             </>
           ) : (
             <>
-              <Button onClick={singout}>Cerrar sesión</Button>
+              <Button onClick={singout} className="flex items-center justify-center gap-2">
+                <MdLogout /> Cerrar sesión
+                </Button>
 
               
               <div className="flex items-center gap-2 text-sm font-medium">
@@ -72,6 +79,7 @@ export default function UserHeaderMenu({
                   alt='avatar'
                   className="w-8 h-8 rounded-full"
                 />
+                
                 <span>{displayName}</span>
               </div>
             </>
@@ -83,7 +91,7 @@ export default function UserHeaderMenu({
           className="sm:hidden h-8 w-8 p-1 flex items-center justify-center"
           onClick={onOpenMobileMenu}
         >
-          ≡
+        <TiThMenu />
         </Button>
 
       </div>

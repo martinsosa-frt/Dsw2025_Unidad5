@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form'; // 1. Importamos useForm
 import { toast, Toaster } from 'react-hot-toast';
+import { FaMoneyBill } from "react-icons/fa";
 
 // Hooks
 import useAuth from '../../../auth/hook/useAuth';
@@ -16,7 +17,9 @@ import UserHeaderMenu from '../../../shared/components/UserHeaderMenu';
 import MobileSideMenu from '../../../shared/components/MobileSideMenu';
 import LoginModal from '../../../auth/components/LoginModal';
 import RegisterModal from '../../../auth/components/RegisterModal';
-import Input from '../../../shared/components/Input'; // 2. Asegúrate de importar tu Input
+import Input from '../../../shared/components/Input';
+import { MdDelete } from "react-icons/md";
+
 
 // Services
 import { createOrder } from '../../../orders/services/createOrder';
@@ -219,14 +222,14 @@ function CartPage() {
                   </div>
 
                   <Button
-                    className="ml-50 sm:ml-5 text-sm px-4 py-2 sm:text-base font-semibold"
+                    className="ml-50 sm:ml-5 text-sm px-4 py-2 sm:text-base font-semibold flex items-center justify-center gap-2"
                     onClick={() => {
                       if (delQty >= item.quantity) removeFromCart(item.sku);
                       else updateQuantity(item.sku, item.quantity - delQty);
                       reset(item.sku);
                     }}
                   >
-                    Borrar
+                   <MdDelete /> Borrar
                   </Button>
                 </div>
                 <div className="mt-3 text-right font-semibold text-lg">
@@ -240,8 +243,8 @@ function CartPage() {
         {/* DERECHA: Resumen del Pedido + FORMULARIO */}
         <Card className="sm:w-80 h-fit p-4">
           <h2 className="text-lg font-semibold mb-4">Detalle del pedido</h2>
-          <p className="text-lg mb-2">Total ítems: {totalItems}</p>
-          <p className="text-lg font-bold mb-6">Total a pagar: ${totalAmount.toFixed(2)}</p>
+          <p className="text-lg mb-6">Total ítems: {totalItems}</p>
+          <p className="text-lg font-bold mb-6 flex items-center justify-center gap-2"><FaMoneyBill />Total a pagar: ${totalAmount.toFixed(2)}</p>
 
           {/* 5. AQUI EMPIEZA EL FORMULARIO INTEGRADO */}
           <form onSubmit={handleSubmit(sendOrder)} className="flex flex-col gap-4">
