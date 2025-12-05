@@ -76,8 +76,10 @@ export default function ListProductsUserPage() {
 
   const totalPages = Math.ceil(total / pageSize);
   return (
-    <div>
-       {/* HEADER REUTILIZABLE */}
+     <div className="bg-neutral-100 min-h-[100dvh]">
+    {/* CONTENIDO PRINCIPAL (con un poco de padding lateral) */}
+    <div className="px-4">
+      {/* HEADER REUTILIZABLE */}
       <UserHeaderMenu
         title="Productos"
         totalItems={totalItems}
@@ -93,33 +95,12 @@ export default function ListProductsUserPage() {
         }}
       />
 
-      {/* MOBILE MENU REUTILIZABLE */}
-      <MobileSideMenu
-        isOpen={openCartMenu}
-        onClose={() => setOpenCartMenu(false)}
-        title="Menú"
-        onGoCart={() => {
-          setOpenCartMenu(false);
-          navigate("/cart");
-        }}
-        onGoProducts={null}
-        totalItems={totalItems}
-        onOpenLogin={() => {
-          setOpenCartMenu(false);
-          setOpenLoginModal(true);
-        }}
-        onOpenRegister={() => {
-          setOpenCartMenu(false);
-          setOpenRegisterModal(true);
-        }}
-      />
-
       {/* PRODUCT LIST */}
       <div
         className="
-        mt-4 flex flex-col gap-4
-        sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
-      "
+          mt-4 flex flex-col gap-4
+          sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+        "
       >
         {loading ? (
           <span>Buscando productos...</span>
@@ -144,30 +125,30 @@ export default function ListProductsUserPage() {
                 </p>
 
                 {/* Mostrar si ya está en el carrito */}
-                  {(() => {
-                    const cartItem = cart.find((item) => item.sku === product.sku);
-                    if (!cartItem) return null;
+                {(() => {
+                  const cartItem = cart.find(
+                    (item) => item.sku === product.sku
+                  );
+                  if (!cartItem) return null;
 
-                    return (
-                      <p className="text-sm mt-1 text-green-600 font-medium">
-                        Ya tienes {cartItem.quantity} en el carrito.
-                      </p>
-                    );
-                  })()}
+                  return (
+                    <p className="text-sm mt-1 text-green-600 font-medium">
+                      Ya tienes {cartItem.quantity} en el carrito.
+                    </p>
+                  );
+                })()}
 
-
-                <div className="flex items-center gap-4 mt-3">
+                <div className="flex flex-wrap items-center gap-4 mt-3">
                   <Button
-                   
                     onClick={() =>
-                        setQuantities((prev) => ({
-                          ...prev,
-                          [product.sku]: Math.max(1, qty - 1),
-                        }))
-                      }
-                      disabled={qty <= 1}
-                      className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
+                      setQuantities((prev) => ({
+                        ...prev,
+                        [product.sku]: Math.max(1, qty - 1),
+                      }))
+                    }
+                    disabled={qty <= 1}
+                    className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
                     ➖
                   </Button>
 
@@ -199,22 +180,20 @@ export default function ListProductsUserPage() {
                     )}
                   </div>
 
-
-                 <Button
-                  onClick={() => {
-                    addToCart(product, qty);
-                    setQuantities((prev) => ({
-                      ...prev,
-                      [product.sku]: 1,
-                    }));
-                  }}
-                  disabled={isMaxReached}
-                  className="ml-50 sm:ml-5 text-sm px-4 py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Agregar
-                </Button>
-
-
+                  {/* dejo tu ml-50 como lo tenías, para no tocar el layout de escritorio */}
+                  <Button
+                    onClick={() => {
+                      addToCart(product, qty);
+                      setQuantities((prev) => ({
+                        ...prev,
+                        [product.sku]: 1,
+                      }));
+                    }}
+                    disabled={isMaxReached}
+                    className="ml-auto sm:ml-5 text-sm px-4 py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Agregar
+                  </Button>
                 </div>
               </Card>
             );
@@ -258,17 +237,39 @@ export default function ListProductsUserPage() {
           <option value="20">20</option>
         </select>
       </div>
-
-      {/* MODALS */}
-      <LoginModal
-        isOpen={openLoginModal}
-        onClose={() => setOpenLoginModal(false)}
-      />
-
-      <RegisterModal
-        isOpen={openRegisterModal}
-        onClose={() => setOpenRegisterModal(false)}
-      />
     </div>
+
+    {/* MOBILE MENU REUTILIZABLE (overlay, no afecta el padding) */}
+    <MobileSideMenu
+      isOpen={openCartMenu}
+      onClose={() => setOpenCartMenu(false)}
+      title="Menú"
+      onGoCart={() => {
+        setOpenCartMenu(false);
+        navigate("/cart");
+      }}
+      onGoProducts={null}
+      totalItems={totalItems}
+      onOpenLogin={() => {
+        setOpenCartMenu(false);
+        setOpenLoginModal(true);
+      }}
+      onOpenRegister={() => {
+        setOpenCartMenu(false);
+        setOpenRegisterModal(true);
+      }}
+    />
+
+    {/* MODALS */}
+    <LoginModal
+      isOpen={openLoginModal}
+      onClose={() => setOpenLoginModal(false)}
+    />
+
+    <RegisterModal
+      isOpen={openRegisterModal}
+      onClose={() => setOpenRegisterModal(false)}
+    />
+  </div>
   )
 }

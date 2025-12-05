@@ -50,11 +50,12 @@ function LoginForm({onSuccess}) {
     <form className='
         flex
         flex-col
-        gap-20
+        gap-4
         bg-white
-        p-8
+        p-4
         sm:w-md
-        sm:gap-4
+        sm:p-8
+        sm:gap-6
         sm:rounded-lg
         sm:shadow-lg
       '
@@ -76,8 +77,22 @@ function LoginForm({onSuccess}) {
         error={errors.password?.message}
       />
 
-      <Button type='submit'>Iniciar Sesión</Button>
-      <Button variant='secondary' type='button' onClick={goToRegister}>Registrar Usuario</Button>
+      <Button
+        type='submit'
+        className='mt-2 w-full py-2 text-sm sm:py-3 sm:text-base'
+      >
+        Iniciar Sesión
+      </Button>
+
+      <Button
+        variant='secondary'
+        type='button'
+        onClick={goToRegister}
+        className="mt-2 w-full py-2 text-sm sm:py-3 sm:text-base"
+      >
+        Registrar Usuario
+      </Button>
+
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );
