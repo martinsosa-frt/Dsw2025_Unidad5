@@ -88,13 +88,13 @@ function CartPage() {
 
       if (error) throw error;
          clearCart();
-        toast.success("Orden creada con éxito", {
+        toast.success("Compra realizada con éxito", {
         icon: "✅🚀",
         duration: 3000,
         style: {
           padding: '16px',
           color: '#fff',          
-          background: '#22c55e',    
+          background: '#41b86d',    
           fontSize: "20px",
           minWidth: "300px",
         }
